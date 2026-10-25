@@ -23,7 +23,7 @@ jobs:
         run: |
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y \
-            desktop-file-utils e2fsprogs file libfuse2 live-build \
+            ca-certificates curl desktop-file-utils e2fsprogs file libfuse2 live-build \
             debootstrap qemu-utils squashfs-tools xorriso
 
       - name: Build MyPortableOS live image
