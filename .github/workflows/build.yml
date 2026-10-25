@@ -3,6 +3,10 @@ name: Deploy Portable OS
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  TINYCORE_ISO_URL: https://distro.ibiblio.org/tinycorelinux/17.x/x86_64/release/TinyCorePure64-current.iso
 
 jobs:
   build-ubuntu:
@@ -14,12 +18,13 @@ jobs:
       - name: Install Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y qemu-system-x86 wget desktop-file-utils
+          sudo apt-get install -y desktop-file-utils file libfuse2
 
       - name: Download TinyCore OS Image
         run: |
           mkdir -p os-payload
-          wget -O os-payload/core.iso http://tinycorelinux.net
+          curl -fL --retry 3 "$TINYCORE_ISO_URL" -o os-payload/core.iso
+          file os-payload/core.iso | grep -q 'ISO 9660'
 
       - name: Prepare AppDir Structure
         run: |
@@ -30,12 +35,12 @@ jobs:
           cp appimage-recipe/AppRun MyOS.AppDir/
           chmod +x MyOS.AppDir/AppRun
           cp appimage-recipe/myos.desktop MyOS.AppDir/
-          
-          wget -O MyOS.AppDir/myos.png https://wikimedia.org
+          cp appimage-recipe/myos.svg MyOS.AppDir/
+          desktop-file-validate MyOS.AppDir/myos.desktop
 
       - name: Build AppImage
         run: |
-          wget -O appimagetool https://github.com
+          curl -fL --retry 3 -o appimagetool https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
           chmod +x appimagetool
           ARCH=x86_64 ./appimagetool MyOS.AppDir MyOS-x86_64.AppImage
 
@@ -45,6 +50,12 @@ jobs:
           name: myos-linux-appimage
           path: MyOS-x86_64.AppImage
 
+      - name: Upload OS Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: myos-os-payload
+          path: os-payload/core.iso
+
   build-windows:
     runs-on: windows-latest
     needs: build-ubuntu
@@ -52,8 +63,20 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Download OS Image
+        uses: actions/download-artifact@v4
+        with:
+          name: myos-os-payload
+          path: windows-package/os-payload
+
+      - name: Package Windows Launcher
+        shell: pwsh
+        run: |
+          Copy-Item windows-recipe/launch.bat windows-package/launch.bat
+          Compress-Archive -Path windows-package/* -DestinationPath MyOS-windows-x86_64.zip -Force
+
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
           name: myos-windows-launcher
-          path: windows-recipe/launch.bat
+          path: MyOS-windows-x86_64.zip
