@@ -1,14 +1,12 @@
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "${0}")")"
 
-# Check if QEMU is available on the host system
 if ! command -v qemu-system-x86_64 >/dev/null 2>&1; then
     echo "Error: QEMU is required to run this OS sandbox."
     echo "Please install it via: sudo apt install qemu-system-x86"
     exit 1
 fi
 
-# Boot the embedded operating system image in a desktop window
 exec qemu-system-x86_64 \
     -cdrom "$HERE/usr/share/myos/core.iso" \
     -m 1024M \
