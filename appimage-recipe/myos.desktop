@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=MyPortableOS
+Exec=AppRun
+Icon=myos
+Type=Application
+Categories=Utility;
+Comment=Run an entire operating system inside a standalone window.
