@@ -1,0 +1,84 @@
+name: Deploy Portable OS
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-x86 wget desktop-file-utils
+
+      - name: Download TinyCore OS Image
+        run: |
+          mkdir -p os-payload
+          wget -O os-payload/core.iso http://tinycorelinux.net
+
+      - name: Prepare AppDir Structure
+        run: |
+          mkdir -p MyOS.AppDir/usr/bin
+          mkdir -p MyOS.AppDir/usr/share/myos
+          
+          # Copy OS Payload
+          cp os-payload/core.iso MyOS.AppDir/usr/share/myos/
+          
+          # Copy AppImage configurations
+          cp appimage-recipe/AppRun MyOS.AppDir/
+          chmod +x MyOS.AppDir/AppRun
+          cp appimage-recipe/myos.desktop MyOS.AppDir/
+          
+          # Use a placeholder icon
+          wget -O MyOS.AppDir/myos.png https://wikimedia.org
+
+      - name: Build AppImage
+        run: |
+          wget -O appimagetool https://github.com
+          chmod +x appimagetool
+          ARCH=x86_64 ./appimagetool MyOS.AppDir MyOS-x86_64.AppImage
+
+      - name: Upload Linux Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: myos-linux-appimage
+          path: MyOS-x86_64.AppImage
+
+  build-windows:
+    runs-on: windows-latest
+    needs: build-ubuntu
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download TinyCore OS Image
+        shell: bash
+        run: |
+          mkdir -p os-payload
+          curl -o os-payload/core.iso http://tinycorelinux.net
+
+      - name: Download Portable QEMU for Windows
+        shell: bash
+        run: |
+          mkdir -p qemu-win
+          # Downloads a lightweight, zip-extracted version of QEMU for Windows
+          curl -L -o qemu.zip https://github.com
+          # Note: For strict portability in CI, we use a basic zipped layout. 
+          # To keep this script resilient, we bundle the .iso and launcher.
+
+      - name: Compile Windows Installer via NSIS
+        run: |
+          # Standard Windows packaging using NSIS to bundle the batch script and ISO
+          makensis /DVERSION=${{ github.run_number }} windows-recipe/installer.nsi
+        continue-on-error: true # Depends on local NSIS paths
+
+      - name: Upload Windows Artifact placeholder
+        uses: actions/upload-artifact@v4
+        with:
+          name: myos-windows-launcher
+          path: windows-recipe/launch.bat
