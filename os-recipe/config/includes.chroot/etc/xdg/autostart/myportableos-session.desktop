@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=MyPortableOS desktop setup
+Exec=myportableos-session-setup
+OnlyShowIn=XFCE;
+NoDisplay=true

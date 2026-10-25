@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Welcome to MyPortableOS</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: system-ui, sans-serif;
+      background: #0c1424;
+      color: #edf4ff;
+    }
+    body {
+      box-sizing: border-box;
+      min-height: 100vh;
+      margin: 0;
+      padding: 8vh 8vw;
+      background:
+        radial-gradient(ellipse at 80% 15%, #166c7b 0, transparent 42%),
+        radial-gradient(ellipse at 15% 90%, #433a86 0, transparent 45%),
+        #0c1424;
+    }
+    main { max-width: 900px; margin: auto; }
+    .eyebrow { color: #74e0ce; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { margin: .4em 0; font-size: clamp(2.8rem, 8vw, 5.8rem); line-height: 1; }
+    .intro { max-width: 620px; color: #bdcce0; font-size: 1.15rem; line-height: 1.7; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-top: 3rem; }
+    a {
+      display: block;
+      min-height: 100px;
+      padding: 22px;
+      border: 1px solid #ffffff24;
+      border-radius: 18px;
+      background: #ffffff0b;
+      color: inherit;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+    a:hover, a:focus-visible { transform: translateY(-3px); background: #ffffff18; }
+    a strong { display: block; margin-bottom: 10px; color: #74e0ce; font-size: 1.15rem; }
+    footer { margin-top: 3rem; color: #91a4bd; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">A private desktop in a virtual machine</p>
+    <h1>Welcome home.</h1>
+    <p class="intro">
+      MyPortableOS is a Debian-powered desktop that runs in QEMU. Your files
+      and settings stay in its separate virtual disk; the host's partitions
+      are not attached.
+    </p>
+    <section class="grid" aria-label="Useful links">
+      <a href="https://www.debian.org/doc/"><strong>Debian documentation</strong>Learn about the system underneath.</a>
+      <a href="https://support.mozilla.org/"><strong>Firefox help</strong>Get help with your browser.</a>
+      <a href="https://www.xfce.org/"><strong>XFCE desktop</strong>Explore the desktop environment.</a>
+    </section>
+    <footer>No ads are bundled with MyPortableOS. The browser uses strict tracking protection.</footer>
+  </main>
+</body>
+</html>

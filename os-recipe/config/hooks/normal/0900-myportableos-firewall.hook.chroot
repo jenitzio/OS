@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+
+sed -i 's/^ENABLED=.*/ENABLED=yes/' /etc/ufw/ufw.conf
+sed -i 's/^DEFAULT_INPUT_POLICY=.*/DEFAULT_INPUT_POLICY="DROP"/' /etc/default/ufw
+systemctl --root=/ enable ufw.service

@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+
+wallpaper=/usr/share/backgrounds/myportableos/wallpaper.svg
+xfconf-query --channel xfce4-desktop --list |
+    while IFS= read -r property; do
+        case "$property" in
+            /backdrop/*/last-image)
+                xfconf-query --channel xfce4-desktop \
+                    --property "$property" --create --type string --set "$wallpaper"
+                ;;
+            /backdrop/*/image-style)
+                xfconf-query --channel xfce4-desktop \
+                    --property "$property" --create --type int --set 5
+                ;;
+        esac
+    done
+
+xfconf-query --channel xsettings --property /Net/ThemeName \
+    --create --type string --set Arc-Dark
+xfconf-query --channel xsettings --property /Net/IconThemeName \
+    --create --type string --set Papirus-Dark
